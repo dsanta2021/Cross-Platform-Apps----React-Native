@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Text, View, TouchableOpacity, StyleSheet } from 'react-native';
+import { SafeAreaView, Text, View, TouchableOpacity, StyleSheet } from 'react-native';
 
 export default function App() {
   const [input, setInput] = useState('');
@@ -77,41 +77,43 @@ const handleEqual = () => {
   };
 
   return (
-    <View style={styles.container}>
-      <View style={styles.display}>
-        {justEvaluated ? (
-          <>
-            <Text style={styles.inputText}>{result}</Text>
-            <Text style={styles.resultText}>{input}</Text>
-          </>
-        ) : (
-          <>
-            <Text style={styles.inputText}>{input}</Text>
-            <Text style={styles.resultText}>{result}</Text>
-          </>
-        )}
-      </View>
+    <SafeAreaView style={styles.safeArea}>
+      <View style={styles.container}>
+        <View style={styles.display}>
+          {justEvaluated ? (
+            <>
+              <Text style={styles.inputText}>{result}</Text>
+              <Text style={styles.resultText}>{input}</Text>
+            </>
+          ) : (
+            <>
+              <Text style={styles.inputText}>{input}</Text>
+              <Text style={styles.resultText}>{result}</Text>
+            </>
+          )}
+        </View>
 
-      <View style={styles.row}>
-        {['7', '8', '9', 'DEL', 'AC'].map((item) =>
-          item === 'AC' 
-            ? renderButton(item, handleClear)
-            : renderButton(item, handlePress)
-        )}
+        <View style={styles.row}>
+          {['7', '8', '9', 'DEL', 'AC'].map((item) =>
+            item === 'AC' 
+              ? renderButton(item, handleClear)
+              : renderButton(item, handlePress)
+          )}
+        </View>
+        <View style={styles.row}>
+          {['4', '5', '6', '*', '/'].map((item) => renderButton(item, handlePress))}
+        </View>
+        <View style={styles.row}>
+          {['1', '2', '3', '+', '-'].map((item) => renderButton(item, handlePress))}
+        </View>
+        <View style={styles.row}>
+          {['0', '.', 'ANS', '(', ')'].map((item) => renderButton(item, handlePress))}
+        </View>
+        <View style={styles.row}>
+          {renderButton('=', handleEqual)}
+        </View>
       </View>
-      <View style={styles.row}>
-        {['4', '5', '6', '*', '/'].map((item) => renderButton(item, handlePress))}
-      </View>
-      <View style={styles.row}>
-        {['1', '2', '3', '+', '-'].map((item) => renderButton(item, handlePress))}
-      </View>
-      <View style={styles.row}>
-        {['0', '.', 'ANS', '(', ')'].map((item) => renderButton(item, handlePress))}
-      </View>
-      <View style={styles.row}>
-        {renderButton('=', handleEqual)}
-      </View>
-    </View>
+    </SafeAreaView>
   );
 }
 
@@ -162,4 +164,8 @@ const styles = StyleSheet.create({
   buttonRed: {
     backgroundColor: '#ff4444', 
   },
+  safeArea: {
+  flex: 1,
+  backgroundColor: '#101010',
+},
 });

@@ -5,6 +5,8 @@ export default function App() {
   const [input, setInput] = useState('');
   const [result, setResult] = useState('');
   const [justEvaluated, setJustEvaluated] = useState(false);
+  const [ansValue, setAnsValue] = useState('');
+
 
 
 const handlePress = (value) => {
@@ -13,13 +15,10 @@ const handlePress = (value) => {
     setJustEvaluated(false);
     return;
   }
+
   if (justEvaluated) {
     if (/[0-9.]/.test(value) || value === '(' || value === 'ANS') {
-      if (value === 'ANS' && result && result !== 'Error') {
-        setInput(result);
-      } else {
-        setInput(value);
-      }
+      setInput(value);
       setResult('');
     } else {
       setInput(result + value);
@@ -28,12 +27,7 @@ const handlePress = (value) => {
     setJustEvaluated(false);
     return;
   }
-  if (value === 'ANS') {
-    if (result && result !== 'Error') {
-      setInput((prev) => prev + result);
-    }
-    return;
-  }
+
   setInput((prev) => prev + value);
 };
 
@@ -44,18 +38,22 @@ const handlePress = (value) => {
     setJustEvaluated(false);
   };
 
-  const handleEqual = () => {
-    try {
-      // Reemplaza todas las apariciones de ANS por el valor de result
-      const expression = input.replace(/ANS/g, result && result !== 'Error' ? result : '0');
-      const evalResult = eval(expression);
-      setResult(evalResult.toString());
-      setJustEvaluated(true);
-    } catch (error) {
-      setResult('Error');
-      setJustEvaluated(false);
-    }
-  };
+const handleEqual = () => {
+  try {
+    const safeAns = ansValue && ansValue !== 'Error' ? ansValue : '0';
+    const expression = input.replace(/ANS/g, `(${safeAns})`);
+    const evalResult = eval(expression);
+    setResult(evalResult.toString());
+    setAnsValue(evalResult.toString());  // <-- guardamos para futuras operaciones
+    setJustEvaluated(true);
+  } catch (error) {
+    setResult('Error');
+    setJustEvaluated(false);
+  }
+};
+
+
+
 
   const renderButton = (label, onPress) => (
     <TouchableOpacity style={styles.button} onPress={() => onPress(label)}>

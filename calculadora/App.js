@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { SafeAreaView, Text, View, TouchableOpacity, StyleSheet } from 'react-native';
+import { Text, View, TouchableOpacity, StyleSheet, SafeAreaView } from 'react-native';
 
 export default function App() {
   const [input, setInput] = useState('');
@@ -7,35 +7,32 @@ export default function App() {
   const [justEvaluated, setJustEvaluated] = useState(false);
   const [ansValue, setAnsValue] = useState('');
 
-
-
-const handlePress = (value) => {
-  if (value === 'DEL') {
-    setInput((prev) => {
-      if (prev.endsWith('ANS')) {
-        return prev.slice(0, -3);
-      }
-      return prev.slice(0, -1);
-    });
-    setJustEvaluated(false);
-    return;
-  }
-
-  if (justEvaluated) {
-    if (/[0-9.]/.test(value) || value === '(' || value === 'ANS') {
-      setInput(value);
-      setResult('');
-    } else {
-      setInput(result + value);
-      setResult('');
+  const handlePress = (value) => {
+    if (value === 'DEL') {
+      setInput((prev) => {
+        if (prev.endsWith('ANS')) {
+          return prev.slice(0, -3);
+        }
+        return prev.slice(0, -1);
+      });
+      setJustEvaluated(false);
+      return;
     }
-    setJustEvaluated(false);
-    return;
-  }
 
-  setInput((prev) => prev + value);
-};
+    if (justEvaluated) {
+      if (/[0-9.]/.test(value) || value === '(' || value === 'ANS') {
+        setInput(value);
+        setResult('');
+      } else {
+        setInput(result + value);
+        setResult('');
+      }
+      setJustEvaluated(false);
+      return;
+    }
 
+    setInput((prev) => prev + value);
+  };
 
   const handleClear = () => {
     setInput('');
@@ -43,75 +40,74 @@ const handlePress = (value) => {
     setJustEvaluated(false);
   };
 
-const handleEqual = () => {
-  try {
-    const safeAns = ansValue && ansValue !== 'Error' ? ansValue : '0';
-    const expression = input.replace(/ANS/g, `(${safeAns})`);
-    const evalResult = eval(expression);
-    setResult(evalResult.toString());
-    setAnsValue(evalResult.toString());
-    setJustEvaluated(true);
-  } catch (error) {
-    setResult('Error');
-    setJustEvaluated(false);
-  }
-};
-
-
-
+  const handleEqual = () => {
+    try {
+      const safeAns = ansValue && ansValue !== 'Error' ? ansValue : '0';
+      const expression = input.replace(/ANS/g, `(${safeAns})`);
+      const evalResult = eval(expression);
+      setResult(evalResult.toString());
+      setAnsValue(evalResult.toString());
+      setJustEvaluated(true);
+    } catch (error) {
+      setResult('Error');
+      setJustEvaluated(false);
+    }
+  };
 
   const renderButton = (label, onPress) => {
     let buttonStyle = styles.button;
+    let textStyle = styles.buttonText;
+
     if (label === 'DEL' || label === 'AC') {
       buttonStyle = [styles.button, styles.buttonRed];
+      textStyle = [styles.buttonText, styles.smallText];
     } else if (['+', '-', '*', '/'].includes(label)) {
       buttonStyle = [styles.button, styles.buttonOrange];
+    } else if (label === 'ANS') {
+      textStyle = [styles.buttonText, styles.smallText];
     } else if (label === '=') {
       buttonStyle = [styles.button, styles.buttonBlue];
     }
+
     return (
-      <TouchableOpacity style={buttonStyle} onPress={() => onPress(label)}>
-        <Text style={styles.buttonText}>{label}</Text>
+      <TouchableOpacity key={label} style={buttonStyle} onPress={() => onPress(label)}>
+        <Text style={textStyle}>{label}</Text>
       </TouchableOpacity>
     );
   };
 
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <View style={styles.container}>
-        <View style={styles.display}>
-          {justEvaluated ? (
-            <>
-              <Text style={styles.inputText}>{result}</Text>
-              <Text style={styles.resultText}>{input}</Text>
-            </>
-          ) : (
-            <>
-              <Text style={styles.inputText}>{input}</Text>
-              <Text style={styles.resultText}>{result}</Text>
-            </>
-          )}
-        </View>
+    <SafeAreaView style={styles.container}>
+      <View style={styles.display}>
+        {justEvaluated ? (
+          <>
+            <Text style={styles.inputText}>{result}</Text>
+            <Text style={styles.resultText}>{input}</Text>
+          </>
+        ) : (
+          <>
+            <Text style={styles.inputText}>{input}</Text>
+            <Text style={styles.resultText}>{result}</Text>
+          </>
+        )}
+      </View>
 
-        <View style={styles.row}>
-          {['7', '8', '9', 'DEL', 'AC'].map((item) =>
-            item === 'AC' 
-              ? renderButton(item, handleClear)
-              : renderButton(item, handlePress)
-          )}
-        </View>
-        <View style={styles.row}>
-          {['4', '5', '6', '*', '/'].map((item) => renderButton(item, handlePress))}
-        </View>
-        <View style={styles.row}>
-          {['1', '2', '3', '+', '-'].map((item) => renderButton(item, handlePress))}
-        </View>
-        <View style={styles.row}>
-          {['0', '.', 'ANS', '(', ')'].map((item) => renderButton(item, handlePress))}
-        </View>
-        <View style={styles.row}>
-          {renderButton('=', handleEqual)}
-        </View>
+      <View style={styles.row}>
+        {['7', '8', '9', 'DEL', 'AC'].map((item) =>
+          renderButton(item, item === 'AC' ? handleClear : handlePress)
+        )}
+      </View>
+      <View style={styles.row}>
+        {['4', '5', '6', '*', '/'].map((item) => renderButton(item, handlePress))}
+      </View>
+      <View style={styles.row}>
+        {['1', '2', '3', '+', '-'].map((item) => renderButton(item, handlePress))}
+      </View>
+      <View style={styles.row}>
+        {['0', '.', 'ANS', '(', ')'].map((item) => renderButton(item, handlePress))}
+      </View>
+      <View style={styles.row}>
+        {renderButton('=', handleEqual)}
       </View>
     </SafeAreaView>
   );
@@ -150,22 +146,22 @@ const styles = StyleSheet.create({
     padding: 20,
     borderRadius: 12,
     alignItems: 'center',
+    justifyContent: 'center',
   },
   buttonText: {
     color: '#fff',
     fontSize: 24,
   },
+  smallText: {
+    fontSize: 18,
+  },
   buttonBlue: {
-    backgroundColor: '#204080', 
+    backgroundColor: '#204080',
   },
   buttonOrange: {
-    backgroundColor: '#ffb300', 
+    backgroundColor: '#ffb300',
   },
   buttonRed: {
-    backgroundColor: '#ff4444', 
+    backgroundColor: '#ff4444',
   },
-  safeArea: {
-  flex: 1,
-  backgroundColor: '#101010',
-},
 });

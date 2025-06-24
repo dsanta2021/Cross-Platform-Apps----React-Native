@@ -60,11 +60,21 @@ const handleEqual = () => {
 
 
 
-  const renderButton = (label, onPress) => (
-    <TouchableOpacity style={styles.button} onPress={() => onPress(label)}>
-      <Text style={styles.buttonText}>{label}</Text>
-    </TouchableOpacity>
-  );
+  const renderButton = (label, onPress) => {
+    let buttonStyle = styles.button;
+    if (label === 'DEL' || label === 'AC') {
+      buttonStyle = [styles.button, styles.buttonRed];
+    } else if (['+', '-', '*', '/'].includes(label)) {
+      buttonStyle = [styles.button, styles.buttonOrange];
+    } else if (label === '=') {
+      buttonStyle = [styles.button, styles.buttonBlue];
+    }
+    return (
+      <TouchableOpacity style={buttonStyle} onPress={() => onPress(label)}>
+        <Text style={styles.buttonText}>{label}</Text>
+      </TouchableOpacity>
+    );
+  };
 
   return (
     <View style={styles.container}>
@@ -142,5 +152,14 @@ const styles = StyleSheet.create({
   buttonText: {
     color: '#fff',
     fontSize: 24,
+  },
+  buttonBlue: {
+    backgroundColor: '#204080', 
+  },
+  buttonOrange: {
+    backgroundColor: '#ffb300', 
+  },
+  buttonRed: {
+    backgroundColor: '#ff4444', 
   },
 });

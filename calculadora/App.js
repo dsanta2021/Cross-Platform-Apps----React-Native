@@ -1,12 +1,26 @@
 import React, { useState } from 'react';
 import { StatusBar } from 'expo-status-bar';
-import { Text, View, TouchableOpacity, StyleSheet, SafeAreaView } from 'react-native';
+import { Text, View, TouchableOpacity, StyleSheet, SafeAreaView, useColorScheme } from 'react-native';
 
 export default function App() {
   const [input, setInput] = useState('');
   const [result, setResult] = useState('');
   const [justEvaluated, setJustEvaluated] = useState(false);
   const [ansValue, setAnsValue] = useState('');
+  const colorScheme = useColorScheme(); // 'light' o 'dark'
+  const isDark = colorScheme === 'dark';
+
+  const theme = {
+    background: isDark ? '#101010' : '#f5f5f5',
+    text: isDark ? '#ffffff' : '#000000',
+    subtext: isDark ? '#aaa' : '#666',
+    button: isDark ? '#333' : '#ddd',
+    buttonText: isDark ? '#fff' : '#000',
+    operator: '#ffb300',
+    delete: '#ff4444',
+    equal: '#204080',
+  };
+
 
   const handlePress = (value) => {
     if (value === 'DEL') {
@@ -55,41 +69,46 @@ export default function App() {
     }
   };
 
-  const renderButton = (label, onPress) => {
-    let buttonStyle = styles.button;
-    let textStyle = styles.buttonText;
+const renderButton = (label, onPress) => {
+  let backgroundColor = theme.button;
 
-    if (label === 'DEL' || label === 'AC') {
-      buttonStyle = [styles.button, styles.buttonRed];
-      textStyle = [styles.buttonText, styles.smallText];
-    } else if (['+', '-', '*', '/'].includes(label)) {
-      buttonStyle = [styles.button, styles.buttonOrange];
-    } else if (label === 'ANS') {
-      textStyle = [styles.buttonText, styles.smallText];
-    } else if (label === '=') {
-      buttonStyle = [styles.button, styles.buttonBlue];
-    }
-
-    return (
-      <TouchableOpacity key={label} style={buttonStyle} onPress={() => onPress(label)}>
-        <Text style={textStyle}>{label}</Text>
-      </TouchableOpacity>
-    );
-  };
+  if (label === 'DEL' || label === 'AC') {
+    backgroundColor = theme.delete;
+  } else if (['+', '-', '*', '/'].includes(label)) {
+    backgroundColor = theme.operator;
+  } else if (label === '=') {
+    backgroundColor = theme.equal;
+  }
 
   return (
-    <SafeAreaView style={styles.container}>
-      <StatusBar style="light" />
+    <TouchableOpacity style={[styles.button, { backgroundColor }]} onPress={() => onPress(label)}>
+      <Text
+        style={[styles.buttonText, { color: theme.buttonText }]}
+        numberOfLines={1}
+        adjustsFontSizeToFit
+      >
+        {label}
+      </Text>
+
+    </TouchableOpacity>
+  );
+};
+
+
+  return (
+    <SafeAreaView style={[styles.container, { backgroundColor: theme.background }]}>
+      <StatusBar style={isDark ? 'light' : 'dark'} />
       <View style={styles.display}>
         {justEvaluated ? (
           <>
-            <Text style={styles.inputText}>{result}</Text>
-            <Text style={styles.resultText}>{input}</Text>
+            <Text style={[styles.inputText, { color: theme.text }]}>{input}</Text>
+            <Text style={[styles.resultText, { color: theme.subtext }]}>{result}</Text>
+
           </>
         ) : (
           <>
-            <Text style={styles.inputText}>{input}</Text>
-            <Text style={styles.resultText}>{result}</Text>
+            <Text style={[styles.inputText, { color: theme.text }]}>{input}</Text>
+            <Text style={[styles.resultText, { color: theme.subtext }]}>{result}</Text>
           </>
         )}
       </View>
@@ -155,7 +174,7 @@ const styles = StyleSheet.create({
     fontSize: 24,
   },
   smallText: {
-    fontSize: 18,
+    fontSize: 12,
   },
   buttonBlue: {
     backgroundColor: '#204080',

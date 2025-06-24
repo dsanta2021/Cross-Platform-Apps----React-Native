@@ -11,7 +11,12 @@ export default function App() {
 
 const handlePress = (value) => {
   if (value === 'DEL') {
-    setInput((prev) => prev.slice(0, -1));
+    setInput((prev) => {
+      if (prev.endsWith('ANS')) {
+        return prev.slice(0, -3);
+      }
+      return prev.slice(0, -1);
+    });
     setJustEvaluated(false);
     return;
   }
@@ -44,7 +49,7 @@ const handleEqual = () => {
     const expression = input.replace(/ANS/g, `(${safeAns})`);
     const evalResult = eval(expression);
     setResult(evalResult.toString());
-    setAnsValue(evalResult.toString());  // <-- guardamos para futuras operaciones
+    setAnsValue(evalResult.toString());
     setJustEvaluated(true);
   } catch (error) {
     setResult('Error');
@@ -64,8 +69,17 @@ const handleEqual = () => {
   return (
     <View style={styles.container}>
       <View style={styles.display}>
-        <Text style={styles.inputText}>{input}</Text>
-        <Text style={styles.resultText}>{result}</Text>
+        {justEvaluated ? (
+          <>
+            <Text style={styles.inputText}>{result}</Text>
+            <Text style={styles.resultText}>{input}</Text>
+          </>
+        ) : (
+          <>
+            <Text style={styles.inputText}>{input}</Text>
+            <Text style={styles.resultText}>{result}</Text>
+          </>
+        )}
       </View>
 
       <View style={styles.row}>

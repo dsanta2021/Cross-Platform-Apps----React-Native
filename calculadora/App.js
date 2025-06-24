@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { StatusBar } from 'expo-status-bar';
 import { Text, View, TouchableOpacity, StyleSheet, SafeAreaView } from 'react-native';
 
 export default function App() {
@@ -78,6 +79,7 @@ export default function App() {
 
   return (
     <SafeAreaView style={styles.container}>
+      <StatusBar style="light" />
       <View style={styles.display}>
         {justEvaluated ? (
           <>
